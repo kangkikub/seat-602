@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>จองที่นั่งห้องเรียน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Mali:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light dark;
+--bg:light-dark(#eef2f6,#0f1624);--ink:light-dark(#17233b,#e8edf7);--mute:light-dark(#5b6a82,#9aa8c0);--card:light-dark(#fff,#18213a);--line:light-dark(#c9d3e0,#2c3a5a);
+--free:light-dark(#fff,#1d2a48);--mine:light-dark(#ffc53d,#e0a820);--mineink:#2b1f00;--taken:light-dark(#dfe5f0,#2a3552);--pend:light-dark(#c8f2de,#134635);--pendline:light-dark(#12875a,#4fd39b);
+--teach:light-dark(#17233b,#e8edf7);--teachink:light-dark(#fff,#17233b);--accent:light-dark(#2457d6,#7ea2ff);--onacc:light-dark(#fff,#0f1624);--danger:light-dark(#c0392b,#ff8a7a);--door:light-dark(#12875a,#4fd39b);--doorink:light-dark(#fff,#0f1624)}
+:root[data-theme="light"]{color-scheme:light}:root[data-theme="dark"]{color-scheme:dark}
+*{box-sizing:inherit}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 'IBM Plex Sans Thai','Noto Sans Thai','Leelawadee UI',Tahoma,sans-serif}
+#app{max-width:980px;margin:0 auto;padding:16px}
+h1,h2{font-family:'Mali','IBM Plex Sans Thai',Tahoma,sans-serif;margin:0;line-height:1.3}h1{font-size:1.6rem}h2{font-size:1.15rem;margin-bottom:8px}
+header{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin-bottom:8px}
+header p{margin:0;color:var(--mute)}.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button,input,textarea{font:inherit;color:inherit}
+button{border:1.5px solid var(--line);background:var(--card);border-radius:8px;padding:6px 14px;cursor:pointer}
+button.pri{background:var(--accent);border-color:var(--accent);color:var(--onacc);font-weight:600}
+button.on{border-color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent)}button.dng{color:var(--danger)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input,textarea{width:100%;border:1.5px solid var(--line);background:var(--card);border-radius:8px;padding:10px 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+.login{max-width:400px;margin:40px auto}.login label{display:block;margin:8px 0 4px;color:var(--mute)}.login button{margin-top:12px;margin-right:8px}
+.err,.msg{color:var(--danger);min-height:1.4em;margin:6px 0}.msg{color:var(--accent)}
+.who{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center}.who p{margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.85rem;color:var(--mute);margin:8px 0}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:4px;border:2px solid var(--accent);background:var(--free)}
+.scroll{overflow-x:auto;padding:6px 2px 12px}
+.grid{--cell:clamp(46px,7vw,64px);display:grid;grid-template-columns:repeat(var(--cols),var(--cell));gap:6px;width:max-content;margin:0 auto}
+.cell{width:var(--cell);height:var(--cell);border-radius:8px}
+.cell.t{background:var(--teach);color:var(--teachink);font-size:12px;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden}.edit .t{font-size:10px}.cell.t.ob{white-space:normal;text-align:center;line-height:1.15;font-size:11px;padding:0 2px;word-break:break-word}.edit .cell.t.ob{font-size:10px}.cell.t.dr{background:var(--door);color:var(--doorink);white-space:normal;text-align:center;line-height:1.15;font-size:11px;padding:0 2px}
+.seat{border:2px solid var(--accent);background:var(--free);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;line-height:1.15;overflow:hidden;font-size:11px;cursor:pointer}
+.seat b{font-size:12px;font-weight:600}.seat span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.seat.taken{border-color:transparent;background:var(--taken);color:var(--mute);cursor:not-allowed}
+.seat.mine{background:var(--mine);border-color:var(--mine);color:var(--mineink)}
+.seat.from{border:2px dashed var(--mineink)}
+.seat.pend{background:var(--pend);border:2px dashed var(--pendline);color:var(--ink)}
+.edit .grid{touch-action:none;user-select:none}.edit .cell{cursor:crosshair}.edit .void{border:1.5px dashed var(--line)}
+.bar{position:sticky;bottom:0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;background:var(--card);border:2px solid var(--pendline);border-radius:12px;padding:12px 16px;margin-top:8px}
+.bar span{flex:1 1 220px}.bar small{display:block;color:var(--mute)}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;border:1px solid var(--line)}.objed{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end;margin:0 0 10px}.objed label{display:flex;flex-direction:column;gap:2px;color:var(--mute);font-size:.85rem}
+.list{display:flex;flex-wrap:wrap;gap:6px}.list span{background:var(--taken);border-radius:8px;padding:2px 4px 2px 10px;font-size:.9rem}
+.list button{border:0;padding:0 8px;background:none;color:var(--danger)}
+#print{display:none}
+@media print{:root{color-scheme:light;padding:0}#app{display:none!important}#print{display:block;color:#000;background:#fff;padding:8px}
+#print .grid{--cell:50px;margin:12px 0}#print .seat{border:1px solid #000;background:#fff;color:#000;cursor:default}#print .seat.taken{background:#e4e4e4;color:#000}
+#print .cell.t{background:#000;color:#fff}#print .cell.t.dr{background:#fff;color:#000;border:2px dashed #000}#print .cell.t.ob{background:#fff!important;color:#000!important;border:1.5px solid #000}#print table{border-collapse:collapse;width:100%;margin-top:12px}#print th,#print td{border:1px solid #000;padding:3px 8px;text-align:left}}
+</style></head>
+<body><div id="app"></div><div id="print"></div>
+
+<!-- นำเข้า Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBEO6QOzENrgtVT0Dvz-puLSaPI5ZfVIMc",
+  authDomain: "keep-money-kk.firebaseapp.com",
+  projectId: "keep-money-kk",
+  storageBucket: "keep-money-kk.firebasestorage.app",
+  messagingSenderId: "465000884444",
+  appId: "1:465000884444:web:54ba047b688d7fe3d7ec19",
+  measurementId: "G-39GP8QS06G"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ===== รหัสผ่านผู้ดูแล =====
+const ADMIN_PASSWORD='kang2551';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DEF={title:'ห้องเรียน',rows:['_bbbbbbbbbb_','_t__________','ss__ssss_ss_','ss__ssss_ss_','ss__ssss_ss_','ss_______sss','____kkkk__dd']};
+const S={layout:DEF,roster:null,seats:{},me:null,pending:null,view:'login',step:'id',draft:null,tool:'s',err:'',msg:'',admin:false,busy:false,rosDraft:null,cr:false};
+let painting=false;
+
+const parseIds=t=>String(t||'').split(/\n/).map(l=>l.trim().split(/[\s,]+/)[0]).filter(Boolean);
+const mySeat=id=>Object.keys(S.seats).find(k=>S.seats[k].sid===id);
+function labels(L){const m={};let ri=0;L.rows.forEach((row,r)=>{if(!row.includes('s'))return;const ch=String.fromCharCode(65+ri++);let n=0;for(let c=0;c<row.length;c++)if(row[c]==='s')m['r'+r+'c'+c]=ch+(++n)});return m}
+const CLS={s:'seat',t:'t',b:'t',k:'t',d:'t dr',_:'void'};
+const POOL='123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ',PAL=['#e07a5f','#3d85c6','#81b29a','#f2cc8f','#9b72cf','#e56b9a','#6cb4c9','#a1887f'];
+const getObj=(L,ch)=>{const q=POOL.includes(ch)?(L.objs||{})[ch]:null;return q&&typeof q==='object'?q:null};
+const hex=c=>/^#[0-9a-f]{6}$/i.test(c)?c:'#8899aa';
+const ink=c=>{const n=parseInt(hex(c).slice(1),16),r=n>>16,g=n>>8&255,b=n&255;return(r*299+g*587+b*114)/1000>150?'#17233b':'#fff'};
+const ost=q=>`background:${hex(q.color)};color:${ink(q.color)}`;
+const oname=q=>String(q.name??'').trim()||'วัตถุ';
+const cleanObjs=D=>{const o={};for(const ch of Object.keys(D.objs||{}))if(getObj(D,ch))o[ch]={name:oname(D.objs[ch]),color:hex(D.objs[ch].color)};return o};
+const LBL={b:'กระดาน',t:'ครู',k:'ตู้ล็อกเกอร์',d:'ทางเข้า-ออก'};const SH={b:'กระดาน',t:'ครู',k:'ตู้',d:'ประตู'};
+
+function grid(L,o={}){const lab=labels(L),cols=Math.max(...L.rows.map(r=>r.length)),my=S.me&&mySeat(S.me.id);
+ let h=`<div class="grid" style="--cols:${cols}">`;
+ L.rows.forEach((row,r)=>{for(let c=0;c<cols;c++){const ch=row[c]||'_',k='r'+r+'c'+c;
+  const q=getObj(L,ch);
+  if(o.edit){h+=`<div class="cell ec ${q?'t ob':(CLS[ch]||'void')}" data-ch="${esc(ch)}" data-r="${r}" data-c="${c}"${q?` style="${ost(q)}"`:''}>${q?esc(oname(q)):(SH[ch]||'')}</div>`;continue}
+  if(LBL[ch]||q){if(row[c-1]===ch)continue;let n=1;while(row[c+n]===ch)n++;h+=`<div class="cell ${q?'t ob':CLS[ch]}" style="grid-column:span ${n};width:auto${q?';'+ost(q):''}">${esc(q?oname(q):LBL[ch])}</div>`;continue}
+  else if(ch!=='s')h+='<div class="cell"></div>';
+  else{const s=S.seats[k];let cl='seat';
+   if(s)cl+=(!o.ro&&s.sid===S.me?.id)?' mine':' taken';
+   if(!o.ro&&S.pending){if(k===S.pending)cl+=' pend';else if(k===my)cl+=' from'}
+   const inner=`<b>${lab[k]}</b>${s?`<span>${esc(s.nick)}</span>`:(k===S.pending&&!o.ro?'<span>ใหม่</span>':'')}`;
+   h+=o.ro?`<div class="cell ${cl}">${inner}</div>`:`<button class="cell ${cl}" data-a="seat" data-k="${k}" aria-label="ที่นั่ง ${lab[k]} ${s?'จองแล้วโดย '+esc(s.nick):'ว่าง'}">${inner}</button>`}}});
+ return h+'</div>'}
+
+function head(){return `<header><div><h1>จองที่นั่ง</h1><p>${esc(S.layout.title)}</p></div><div class="row"><button data-a="print">พิมพ์เป็น PDF</button>${S.view==='admin'?'<button data-a="home">ออกจากโหมดผู้ดูแล</button>':''}</div></header><p class="msg" role="status">${esc(S.msg)}</p>`}
+
+function loginV(){const e=`<p class="err" role="alert">${esc(S.err)}</p>`;
+ return S.step==='adm'?`<section class="card login"><h2>ผู้ดูแล</h2><label for="pw">รหัสผ่านผู้ดูแล</label><input id="pw" type="password" autocomplete="off"><button class="pri" data-a="adm">เข้าสู่ระบบ</button><button data-a="back">กลับ</button>${e}</section>`:S.step==='id'
+ ?`<section class="card login"><h2>เข้าสู่ระบบเว็บจองโต๊ะ</h2><label for="idin">ใส่เลขประจำตัวจ้า เช่น 00001</label><input id="idin" inputmode="numeric" autocomplete="off" maxlength="12"><button class="pri" data-a="id">ต่อไป</button>${e}<p style="margin:16px 0 0"><button data-a="toadm">เข้าสู่ระบบผู้ดูแล</button></p></section>`
+ :`<section class="card login"><h2>ชื่อเล่นของคุณ</h2><p>เลขประจำตัว ${esc(S.tid)}</p><label for="nick">ชื่อเล่น</label><input id="nick" maxlength="10" autocomplete="off" value="${esc(S.nick0)}"><button class="pri" data-a="nick">เข้าสู่ระบบ</button><button data-a="back">กลับ</button>${e}</section>`}
+
+function mainV(){const my=mySeat(S.me.id),lab=labels(S.layout),p=S.pending;
+ return `<section class="card"><div class="who"><p>สวัสดี <b>${esc(S.me.nick)}</b> ${my?`ที่นั่งของคุณคือ <b>${lab[my]}</b>`:'คุณยังไม่ได้เลือกที่นั่ง'}</p><div class="row">${my?'<button class="dng" data-a="release">ยกเลิกการจอง</button>':''}<button data-a="logout">ออกจากระบบ</button></div></div>
+ <div class="legend"><span><i></i>ว่าง</span><span><i style="background:var(--mine);border-color:var(--mine)"></i>ที่นั่งของคุณ</span><span><i style="background:var(--taken);border-color:transparent"></i>มีคนจองแล้ว</span><span><i style="background:var(--pend);border:2px dashed var(--pendline)"></i>ที่ใหม่ รอยืนยัน</span></div>
+ <div class="scroll">${grid(S.layout)}</div></section>
+ ${p?`<div class="bar"><span>${my?`ย้ายจาก <b>${lab[my]}</b> ไป <b>${lab[p]}</b>`:`จองที่นั่ง <b>${lab[p]}</b>`}<small>ยังไม่กดยืนยัน คลิกที่นั่งว่างอื่นเพื่อเปลี่ยนที่ใหม่ได้</small></span><button class="pri" data-a="ok">ยืนยัน</button><button data-a="cancel">ยกเลิก</button></div>`:''}`}
+
+function adminV(){const D=S.draft,lab=labels(S.layout),bk=Object.entries(S.seats).sort((a,b)=>(lab[a[0]]||'').localeCompare(lab[b[0]]||'','en',{numeric:true}));
+ const tb=(t,n)=>`<button data-a="tool" data-t="${t}" class="${S.tool===t?'on':''}">${n}</button>`;
+ const ob=D.objs||{},cur=getObj(D,S.tool),objB=Object.keys(ob).filter(ch=>getObj(D,ch)).map(ch=>`<button data-a="tool" data-t="${esc(ch)}" class="${S.tool===ch?'on':''}"><i class="sw" style="background:${hex(ob[ch].color)}"></i><span>${esc(oname(ob[ch]))}</span></button>`).join(''),
+  objEd=cur?`<div class="objed"><label>ชื่อวัตถุ<input id="onm" maxlength="14" autocomplete="off" value="${esc(cur.name)}" style="width:180px"></label><label>สี<input id="ocl" type="color" value="${hex(cur.color)}" style="width:64px;height:42px;padding:2px"></label><button class="dng" data-a="delobj">ลบวัตถุนี้</button></div>`:'';
+ return `<section class="card"><h2>ออกแบบผังที่นั่ง</h2><label for="ttl">ชื่อห้อง</label><input id="ttl" value="${esc(D.title)}">
+ <div class="row" style="margin:10px 0">${tb('s','เก้าอี้')}${tb('_','ทางเดิน/ว่าง')}${tb('b','กระดาน')}${tb('t','ครู')}${tb('k','ตู้ล็อกเกอร์')}${tb('d','ทางเข้า-ออก')}${objB}<button data-a="addobj">+ อื่นๆ</button></div>${objEd}
+ <div class="row" style="margin-bottom:8px">แถว ${D.rows.length}<button data-a="rs" data-d="-1">−</button><button data-a="rs" data-d="1">+</button>คอลัมน์ ${D.rows[0].length}<button data-a="cs" data-d="-1">−</button><button data-a="cs" data-d="1">+</button></div>
+ <p style="margin:0;color:var(--mute)">คลิกหรือลากบนช่องเพื่อวาด แล้วกดบันทึก</p><div class="scroll edit">${grid(D,{edit:1})}</div><button class="pri" data-a="savelayout">บันทึกผัง</button></section>
+ <section class="card"><h2>รายชื่อเลขประจำตัว</h2><p style="margin:0 0 6px;color:var(--mute)">หนึ่งเลขต่อหนึ่งบรรทัด ตอนนี้มี ${(S.roster||[]).length} เลข</p><textarea id="ros" rows="6">${esc(S.rosDraft??(S.roster||[]).join('\n'))}</textarea><button data-a="saveroster" style="margin-top:8px">บันทึกรายชื่อ</button></section>
+ <section class="card"><h2>การจอง ${bk.length} ที่นั่ง</h2><div class="list">${bk.map(([k,v])=>`<span>${lab[k]||k} ${esc(v.nick)} (${esc(v.sid)})<button data-a="rel" data-k="${k}" aria-label="ปล่อยที่นั่ง ${lab[k]||k}">ปล่อย</button></span>`).join('')||'ยังไม่มีการจอง'}</div>
+ <button class="dng" data-a="reset" style="margin-top:12px">${S.cr?'กดอีกครั้งเพื่อยืนยันล้างทั้งหมด':'ล้างการจองทั้งหมด'}</button></section>`}
+
+function render(){const el=$('#app');
+ el.innerHTML=head()+(S.view==='admin'?adminV():S.view==='main'?mainV():loginV());
+ if(S.view==='login')setTimeout(()=>($('#idin')||$('#nick')||$('#pw'))?.focus(),0)}
+
+function refresh(){if(S.view==='main'||(S.view==='admin'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)))render()}
+
+function printHTML(){const L=S.layout,lab=labels(L),rows=Object.entries(S.seats).map(([k,v])=>({l:lab[k]||k,...v})).sort((a,b)=>a.l.localeCompare(b.l,'en',{numeric:true}));
+ return `<h1>ผังที่นั่ง ${esc(L.title)}</h1><p>วันที่ ${new Date().toLocaleDateString('th-TH',{dateStyle:'long'})} จองแล้ว ${rows.length} ที่นั่ง</p>${grid(L,{ro:1})}<table><thead><tr><th>ที่นั่ง</th><th>เลขประจำตัว</th><th>ชื่อเล่น</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.l)}</td><td>${esc(r.sid)}</td><td>${esc(r.nick)}</td></tr>`).join('')}</tbody></table>`}
+
+async function confirmMove(){const k=S.pending;if(!k||S.busy)return;S.busy=true;S.msg='';
+ try{
+  const ref=doc(db, 'classroom_seats', k);
+  const snap=await getDoc(ref);
+  if(snap.exists()){S.msg='มีคนจองที่นั่งนี้ไปก่อนแล้ว เลือกที่นั่งอื่น';S.pending=null;return}
+  const old=mySeat(S.me.id);
+  await setDoc(ref, {sid:S.me.id,nick:S.me.nick,at:Date.now()});
+  
+  if(old&&old!==k){
+    const o=doc(db, 'classroom_seats', old);
+    const os=await getDoc(o);
+    if(os.exists()&&os.data().sid===S.me.id) await deleteDoc(o);
+  }
+  S.pending=null;S.msg=old?'ย้ายที่นั่งเรียบร้อย':'จองที่นั่งเรียบร้อย'}
+ catch(e){S.msg='ทำรายการไม่สำเร็จ ('+(e.code||'error')+')'}
+ finally{S.busy=false;render()}}
+
+const del=async k=>{try{await deleteDoc(doc(db, 'classroom_seats', k))}catch(e){S.msg='ทำรายการไม่สำเร็จ'}};
+
+const A={
+ id(){const v=$('#idin').value.trim();if(!S.roster){S.err='กำลังโหลดรายชื่อ ลองอีกครั้ง';return render()}
+  if(!S.roster.length){S.err='ยังไม่มีรายชื่อในระบบ ติดต่อผู้ดูแล';return render()}
+  if(!S.roster.includes(v)){S.err='ไม่พบเลขประจำตัวนี้ ตรวจสอบแล้วลองอีกครั้ง';return render()}
+  const m=mySeat(v);S.tid=v;S.nick0=m?S.seats[m].nick:'';S.step='nick';S.err='';render()},
+ nick(){const n=$('#nick').value.trim();if(!n){S.err='กรอกชื่อเล่นก่อนเข้าสู่ระบบ';return render()}
+  S.me={id:S.tid,nick:n};const m=mySeat(S.tid);
+  if(m&&S.seats[m].nick!==n) setDoc(doc(db, 'classroom_seats', m), {nick:n}, {merge:true}).catch(()=>{});
+  S.view='main';S.err='';S.msg='';render()},
+ back(){S.step='id';S.err='';render()},
+ toadm(){S.step='adm';S.err='';render()},
+ adm(){if($('#pw').value!==ADMIN_PASSWORD){S.err='รหัสผ่านไม่ถูกต้อง';return render()}S.admin=true;S.err='';A.toadmin()},
+ seat(d){const k=d.k,s=S.seats[k];S.msg='';
+  if(k===mySeat(S.me.id))S.pending=null;else if(s)S.msg='ที่นั่งนี้มีคนจองแล้ว';else S.pending=k;render()},
+ ok:confirmMove,cancel(){S.pending=null;render()},
+ async release(){const m=mySeat(S.me.id);if(m)await del(m);S.pending=null;S.msg='ยกเลิกการจองแล้ว';render()},
+ logout(){S.me=null;S.pending=null;S.view='login';S.step='id';S.msg='';render()},
+ print(){$('#print').innerHTML=printHTML();try{window.print()}catch(e){S.msg='เปิดหน้าพิมพ์ไม่ได้ ลองกด Ctrl+P';render()}},
+ toadmin(){S.draft={title:S.layout.title,rows:[...S.layout.rows],objs:JSON.parse(JSON.stringify(S.layout.objs||{}))};S.tool='s';S.view='admin';S.msg='';render()},
+ home(){S.admin=false;S.view=S.me?'main':'login';S.step='id';S.msg='';render()},
+ tool(d){S.tool=d.t;render()},
+ addobj(){const D=S.draft;D.objs=D.objs||{};const ch=POOL.split('').find(x=>!D.objs[x]);if(!ch){S.msg='เพิ่มวัตถุได้สูงสุด '+POOL.length+' ชนิด';return render()}
+  const n=Object.keys(D.objs).length+1;D.objs[ch]={name:'วัตถุ '+n,color:PAL[(n-1)%PAL.length]};S.tool=ch;S.msg='';render()},
+ delobj(){const D=S.draft,ch=S.tool;if(!getObj(D,ch))return;delete D.objs[ch];D.rows=D.rows.map(r=>r.split(ch).join('_'));S.tool='s';render()},
+ rs(d){const R=S.draft.rows,n=R.length+ +d.d;if(n<1||n>15)return;d.d>0?R.push('_'.repeat(R[0].length)):R.pop();render()},
+ cs(d){const R=S.draft.rows,w=R[0].length+ +d.d;if(w<1||w>20)return;S.draft.rows=R.map(r=>d.d>0?r+'_':r.slice(0,-1));render()},
+ async savelayout(){try{const D=S.draft;await setDoc(doc(db, 'classroom_config', 'layout'), {title:D.title||'ห้องเรียน',rows:D.rows,objs:cleanObjs(D)});const L=labels(D);
+   for(const k of Object.keys(S.seats))if(!L[k])await deleteDoc(doc(db, 'classroom_seats', k));S.msg='บันทึกผังแล้ว'}catch(e){S.msg='บันทึกไม่สำเร็จ'}render()},
+ async saveroster(){try{const ids=parseIds($('#ros').value);await setDoc(doc(db, 'classroom_config', 'roster'), {text:ids.join('\n')});S.rosDraft=null;S.msg='บันทึกรายชื่อ '+ids.length+' เลขแล้ว'}catch(e){S.msg='บันทึกไม่สำเร็จ'}render()},
+ async rel(d){await del(d.k);render()},
+ async reset(){if(!S.cr){S.cr=true;return render()}S.cr=false;for(const k of Object.keys(S.seats))await del(k);S.msg='ล้างการจองแล้ว';render()}};
+
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a])A[b.dataset.a](b.dataset)});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(e.target.id==='idin')A.id();else if(e.target.id==='nick')A.nick();else if(e.target.id==='pw')A.adm()}});
+document.addEventListener('input',e=>{if(e.target.id==='ttl')S.draft.title=e.target.value;if(e.target.id==='ros')S.rosDraft=e.target.value;if(e.target.id==='onm'||e.target.id==='ocl'){const q=getObj(S.draft,S.tool);if(!q)return;if(e.target.id==='onm')q.name=e.target.value;else q.color=e.target.value;syncObj(S.tool)}});
+
+function paint(el){const c=el&&el.closest&&el.closest('.ec');if(!c)return;const r=+c.dataset.r,i=+c.dataset.c,R=S.draft.rows[r];
+ if(R[i]===S.tool)return;S.draft.rows[r]=R.slice(0,i)+S.tool+R.slice(i+1);const q=getObj(S.draft,S.tool);c.className='cell ec '+(q?'t ob':CLS[S.tool]);c.style.cssText=q?ost(q):'';c.textContent=q?oname(q):(SH[S.tool]||'');c.dataset.ch=S.tool}
+
+function syncObj(ch){const q=getObj(S.draft,ch);if(!q)return;
+ document.querySelectorAll('.ec[data-ch]').forEach(c=>{if(c.dataset.ch===ch){c.style.cssText=ost(q);c.textContent=oname(q)}});
+ const b=document.querySelector('button[data-a="tool"][data-t="'+ch+'"]');if(b){b.querySelector('.sw').style.background=hex(q.color);b.querySelector('span').textContent=oname(q)}}
+
+document.addEventListener('pointerdown',e=>{if(e.target.closest('.ec')){painting=true;paint(e.target)}});
+document.addEventListener('pointermove',e=>{if(painting)paint(document.elementFromPoint(e.clientX,e.clientY))});
+document.addEventListener('pointerup',()=>painting=false);
+
+function init(){
+ render();
+ 
+ // ฟังการเปลี่ยนแปลงจาก Firebase Realtime
+ onSnapshot(doc(db, 'classroom_config', 'layout'), s=>{
+  const d=s.exists()&&s.data();
+  if(d&&Array.isArray(d.rows)&&d.rows.length)S.layout=d;
+  refresh();
+ });
+
+ onSnapshot(doc(db, 'classroom_config', 'roster'), s=>{
+  S.roster=s.exists()?parseIds(s.data().text):[];
+  refresh();
+ });
+
+ onSnapshot(collection(db, 'classroom_seats'), q=>{
+  S.seats={};
+  q.docs.forEach(d=>S.seats[d.id]=d.data());
+  if(S.pending&&S.seats[S.pending]){
+    S.pending=null;
+    S.msg='มีคนจองที่นั่งที่คุณเลือกไปก่อนแล้ว';
+  }
+  refresh();
+ });
+}
+
+init();
+</script>
+</body></html>
